@@ -1,12 +1,8 @@
 package frc.team3128;
 
-import edu.wpi.first.wpilibj.PneumaticHub;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import common.hardware.input.NAR_Joystick;
+import common.utility.NAR_Shuffleboard;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import frc.team3128.common.hardware.input.NAR_Joystick;
-import frc.team3128.common.utility.NAR_Shuffleboard;
 import frc.team3128.subsystems.TestBenchPiston;
 import frc.team3128.subsystems.TestBenchDIO;
 import frc.team3128.subsystems.TestBenchMotor;
@@ -21,58 +17,31 @@ import frc.team3128.subsystems.TestBenchMotor;
 public class RobotContainer {
 
     private TestBenchMotor testBenchMotor;
-    private TestBenchPiston testBenchPiston;
-    private TestBenchDIO testBenchDIO;
-    private NAR_Joystick m_leftStick;
+    // private TestBenchPiston testBenchPiston;
+    // private TestBenchDIO testBenchDIO;
     private NAR_Joystick m_rightStick;
-
-    private CommandScheduler m_commandScheduler = CommandScheduler.getInstance();
-    private Command auto;
-
-    private boolean DEBUG = false;
 
     public RobotContainer() {
 
-        m_leftStick = new NAR_Joystick(0);
         m_rightStick = new NAR_Joystick(1);
-        testBenchMotor = TestBenchMotor.getInstance();
-        testBenchPiston = TestBenchPiston.getInstance();
-        testBenchDIO = TestBenchDIO.getInstance(); 
+        testBenchMotor = TestBenchMotor.getInstance("neo", 4, "relative");
+        // testBenchPiston = TestBenchPiston.getInstance();
+        // testBenchDIO = TestBenchDIO.getInstance(); 
 
         configureButtonBindings();
         dashboardInit();
     }   
 
     private void configureButtonBindings() {
-
-        // m_rightStick.getButton(1).onTrue(new RunCommand(testBenchMotor::runFalcon,testBenchMotor));
-        // m_rightStick.getButton(1).onFalse(new RunCommand(testBenchMotor::stopFalcon,testBenchMotor));
-
-        // m_rightStick.getButton(1).onTrue(new RunCommand(testBenchMotor::run775,testBenchMotor));
-        // m_rightStick.getButton(1).onFalse(new RunCommand(testBenchMotor::stop775,testBenchMotor));
-
-        // m_rightStick.getButton(1).onTrue(new RunCommand(testBenchMotor::runNeo,testBenchMotor));
-        // m_rightStick.getButton(1).onFalse(new RunCommand(testBenchMotor::stopNeo,testBenchMotor));
+        m_rightStick.getButton(1).onTrue(new RunCommand(()-> testBenchMotor.runMotor(0.2), testBenchMotor));
+        m_rightStick.getButton(1).onFalse(new RunCommand(()-> testBenchMotor.stopMotor(), testBenchMotor));
     }
 
     private void dashboardInit() {
-        // if (DEBUG) {
-        //     SmartDashboard.putData("CommandScheduler", CommandScheduler.getInstance());
-        //     SmartDashboard.putNumber("xxxxxxMotorRPMxxxxxxx", testBenchMotor.logRPM());
-        // }
-            
-    }
-
-    public void stopDrivetrain() {
-
-    }
-
-    public Command getAutonomousCommand() {
-        return auto;
+        testBenchMotor.initShuffleboard();
     }
 
     public void updateDashboard() {
-        //NAR_Shuffleboard.addData("Sensor", "megSwitch", testBenchDIO.sense(), 0, 0);
-        // SmartDashboard.putBoolean("-----MagSwitch-----", testBenchDIO.sense());
+        NAR_Shuffleboard.update();
     }
 }
